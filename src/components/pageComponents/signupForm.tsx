@@ -16,6 +16,7 @@ import { Github, Mail, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Logo from "../share/Logo";
 import { useForm } from "react-hook-form";
+import { signIn } from "next-auth/react";
 
 interface FormData {
   name: string;
@@ -60,14 +61,29 @@ export default function SignupForm() {
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid grid-cols-2 gap-6">
-            <Button variant="outline">
-              <Github className="mr-2 h-4 w-4" />
-              Github
-            </Button>
-            <Button variant="outline">
-              <Mail className="mr-2 h-4 w-4" />
-              Gmail
-            </Button>
+            <form
+              className="w-full"
+              action={async () => {
+                await signIn("google");
+              }}
+            >
+              <Button className="w-full" variant="outline">
+                <Mail className="mr-2 h-4 w-4" />
+                Gmail
+              </Button>
+            </form>
+
+            <form
+              className="w-full"
+              action={async () => {
+                await signIn("github");
+              }}
+            >
+              <Button className="w-full" variant="outline">
+                <Github className="mr-2 h-4 w-4" />
+                Github
+              </Button>
+            </form>
           </div>
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
