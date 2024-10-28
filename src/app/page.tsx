@@ -1,10 +1,13 @@
-import SignupForm from "@/components/pageComponents/signupForm";
-import React from "react";
+import React, { Suspense, lazy } from "react";
+
+const SignupForm = lazy(() => import("@/components/pageComponents/signupForm"));
 
 const Homepage = () => {
   return (
     <div className="container mx-auto animate-bump overflow-hidden">
-      <SignupForm />
+      <Suspense fallback={<div className="text-center">Loading...</div>}>
+        <SignupForm />
+      </Suspense>
     </div>
   );
 };

@@ -14,24 +14,43 @@ import {
 } from "@/components/ui/card";
 import { Github, Mail, Loader2 } from "lucide-react";
 import Link from "next/link";
+import Logo from "../share/Logo";
+import { useForm } from "react-hook-form";
+
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 export default function SignupForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  async function onSubmit(event: React.SyntheticEvent) {
-    event.preventDefault();
+  // Setup React Hook Form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    getValues,
+  } = useForm<FormData>();
+
+  const onSubmit = async (data: FormData) => {
     setIsLoading(true);
 
+    // Simulate an API call
     setTimeout(() => {
+      console.log(data); // Log the form data
       setIsLoading(false);
     }, 3000);
-  }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Card>
-        <h3 className="text-xl font-bold text-center m-2">
-          All about <span className="text-purple-700">next auth</span>
+        <h3 className="text-xl font-bold text-center flex items-center justify-center">
+          <Logo /> All about{" "}
+          <span className="text-purple-700 ml-1"> next auth</span>
         </h3>
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl">Create an account</CardTitle>
@@ -60,22 +79,70 @@ export default function SignupForm() {
               </span>
             </div>
           </div>
-          <form onSubmit={onSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid gap-2">
               <Label htmlFor="name">Name</Label>
-              <Input id="name" type="text" placeholder="John Doe" />
+              <Input
+                id="name"
+                type="text"
+                placeholder="John Doe"
+                {...register("name", { required: "Name is required" })}
+              />
+              {errors.name && (
+                <span className="text-red-500">{errors.name.message}</span>
+              )}
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="m@example.com" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    message: "Invalid email address",
+                  },
+                })}
+              />
+              {errors.email && (
+                <span className="text-red-500">{errors.email.message}</span>
+              )}
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" />
+              <Input
+                id="password"
+                type="password"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
+              />
+              {errors.password && (
+                <span className="text-red-500">{errors.password.message}</span>
+              )}
             </div>
             <div className="grid gap-2">
               <Label htmlFor="confirm-password">Confirm Password</Label>
-              <Input id="confirm-password" type="password" />
+              <Input
+                id="confirm-password"
+                type="password"
+                {...register("confirmPassword", {
+                  required: "Please confirm your password",
+                  validate: (value) =>
+                    value === getValues("password") || "Passwords do not match",
+                })}
+              />
+              {errors.confirmPassword && (
+                <span className="text-red-500">
+                  {errors.confirmPassword.message}
+                </span>
+              )}
             </div>
             <Button className="w-full mt-4" type="submit" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -85,7 +152,7 @@ export default function SignupForm() {
         </CardContent>
         <CardFooter>
           <p className="px-8 text-center text-sm text-muted-foreground">
-            You have already an account ?{" "}
+            You have already an account?{" "}
             <Link
               href="/login"
               className="underline underline-offset-4 hover:text-primary"
