@@ -1,16 +1,15 @@
-import React from "react";
 import { auth } from "@/auth";
-import authWrapper from "@/lib/authWrapper";
+import React from "react";
 
 const ProfilePage = async () => {
   const session = await auth();
-  console.log(session?.user);
+  if (!session) return <p>Access Denied</p>;
   return (
-    <div>
-      <h1 className="text-xl m-10 p-5">User name: {session?.user?.name}</h1>
-      <h1 className="text-xl m-10 p-5">User email: {session?.user?.email}</h1>
+    <div className="container mx-auto">
+      <p className="text-xl">Welcome, {session.user?.name}!</p>
+      <p>Email: {session.user?.email}</p>
     </div>
   );
 };
 
-export default authWrapper(ProfilePage);
+export default ProfilePage;
